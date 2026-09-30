@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Import notes{% endblock %}
+{% block content %}
+<h1>Import notes from YAML</h1>
+<form method="post" enctype="multipart/form-data">
+  <input type="file" name="file" accept=".yml,.yaml" required>
+  <button type="submit">Import</button>
+</form>
+{% endblock %}

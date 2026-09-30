@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ note['title'] }}{% endblock %}
+{% block content %}
+<h1>{{ note['title'] }}</h1>
+<p>{{ note['created_at'] }}</p>
+<pre>{{ note['body'] }}</pre>
+<a href="{{ url_for('notes.edit', note_id=note['id']) }}">Edit</a>
+<a href="{{ url_for('notes.export', note_id=note['id']) }}">Export</a>
+<form method="post" action="{{ url_for('notes.delete', note_id=note['id']) }}">
+  <button type="submit">Delete</button>
+</form>
+{% endblock %}
