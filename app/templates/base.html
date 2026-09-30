@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Notes{% endblock %} - Notes</title>
+</head>
+<body>
+  <nav>
+    <a href="{{ url_for('notes.index') }}">Notes</a>
+    {% if g.user %}
+      <a href="{{ url_for('notes.create') }}">New note</a>
+      <a href="{{ url_for('notes.import_view') }}">Import</a>
+      <span>{{ g.user['username'] }}</span>
+      <a href="{{ url_for('auth.logout') }}">Log out</a>
+    {% else %}
+      <a href="{{ url_for('auth.register') }}">Register</a>
+      <a href="{{ url_for('auth.login') }}">Log in</a>
+    {% endif %}
+  </nav>
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</body>
+</html>
