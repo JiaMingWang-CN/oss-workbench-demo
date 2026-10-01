@@ -1,3 +1,8 @@
+import io
+import os
+import zipfile
+
+
 def create_note(client, title="Groceries", body="milk, eggs"):
     return client.post("/notes/new", data={"title": title, "body": body})
 
@@ -50,6 +55,21 @@ def test_export_note(logged_in):
     response = logged_in.get("/notes/1/export")
     assert response.status_code == 200
     assert response.data[:2] == b"PK"
+
+
+def test_export_note_with_spaces_and_metacharacters(logged_in):
+    # Issue #2 / SEC-3 / SEC-58: titles with spaces or shell metacharacters
+    # must not break the export or leak into a shell command.
+    create_note(logged_in, title="My Notes; touch /tmp/pwned")
+    response = logged_in.get("/notes/1/export")
+    assert response.status_code == 200
+    assert response.data[:2] == b"PK"
+    with zipfile.ZipFile(io.BytesIO(response.data)) as zf:
+        names = zf.namelist()
+        assert len(names) == 1
+        assert names[0] == "My Notes; touch -tmp-pwned.txt"
+        assert b"touch /tmp/pwned" in zf.read(names[0])
+    assert not os.path.exists("/tmp/pwned")
 
 
 def test_import_yaml(logged_in):
